@@ -1,0 +1,82 @@
+Source: sord
+Section: libs
+Priority: optional
+Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
+Uploaders:
+ Alessio Treglia <alessio@debian.org>,
+ Jaromír Mikeš <mira.mikes@seznam.cz>,
+ Dennis Braun <d_braun@kabelmail.de>
+Build-Depends:
+ debhelper-compat (= 13),
+ libserd-dev (>= 0.30),
+ libpcre++-dev,
+ pkg-config,
+ python3:native,
+Build-Depends-Indep:
+ doxygen,
+Standards-Version: 4.5.1
+Homepage: https://drobilla.net/software/sord/
+Vcs-Git: https://salsa.debian.org/multimedia-team/sord.git
+Vcs-Browser: https://salsa.debian.org/multimedia-team/sord
+Rules-Requires-Root: no
+
+Package: libsord-0-0
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Suggests:
+ sordi
+Description: library for storing RDF data in memory
+ Sord is a lightweight C library for storing Resource
+ Description Framework (RDF) data in memory.
+ .
+ Sord includes man pages for the library (man sord) and a
+ simple command line utility (man sordi).
+
+Package: libsord-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ libserd-dev (>= 0.30),
+ libsord-0-0 (= ${binary:Version}),
+ ${misc:Depends}
+Suggests:
+ libsord-doc
+Recommends:
+ pkg-config
+Description: library for storing RDF data in memory (development files)
+ Sord is a lightweight C library for storing Resource
+ Description Framework (RDF) data in memory.
+ .
+ This package provides the development headers.
+
+Package: sordi
+Architecture: any
+Section: text
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: library for storing RDF data in memory - utilities
+ Sord is a lightweight C library for storing Resource
+ Description Framework (RDF) data in memory.
+ .
+ This package provides the 'sordi' and 'sord_validate' utilities.
+
+Package: libsord-doc
+Section: doc
+Architecture: all
+Multi-Arch: foreign
+Enhances:
+ libsord-dev
+Depends:
+ ${misc:Depends}
+Recommends:
+ libjs-jquery
+Description: library for storing RDF data in memory (documentation)
+ Sord is a lightweight C library for storing Resource
+ Description Framework (RDF) data in memory.
+ .
+ This package provides the developer's reference for sord.

@@ -1,0 +1,217 @@
+sord (0.16.8-2) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Reduce Build-Depends: (Closes: #981735)
+    + Demote doxygen to B-D-I.
+    + Drop graphviz, because HAVE_DOT=NO. 
+
+  [ Dennis Braun ]
+  * Mark libsord-doc as M-A: foreign
+  * Add d/patches/0001-Fix-crash-with-optimized-builds-with-GCC-10.1.0.patch
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Thu, 04 Feb 2021 20:45:55 +0100
+
+sord (0.16.8-1) unstable; urgency=medium
+
+  [ Olivier Humbert ]
+  * d/copyright: http -> https
+
+  [ Dennis Braun ]
+  * New upstream version 0.16.8
+  * Bump S-V to 4.5.1, no changes needed
+  * Add lintian overrides to get rid of the jquery lintian bug
+  * Refresh 1001-dont_run_ldconfig.patch
+  * Remove unnecessary LDFLAGS from d/rules
+  * d/watch: Update pgpsigurlmangle for asc files
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Thu, 14 Jan 2021 18:22:38 +0100
+
+sord (0.16.6-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Use secure URI in Homepage field.
+
+  [ Dennis Braun ]
+  * New upstream version 0.16.6
+    + Fixes FTBFS with doxygen 1.8.19 (Closes: #969143)
+  * Update ldconfig patch
+  * Add d/upstream/signing-key.asc
+  * Add d/upstream/metadata
+  * Bump dh-compat to 13
+  * Bump S-V to 4.5.0
+  * Add me as uploader
+  * Add Build-Depends-Package to symbols file
+  * Update d/copyright year
+  * d/copyright: http > https
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Thu, 08 Oct 2020 15:13:17 +0200
+
+sord (0.16.4-1) unstable; urgency=medium
+
+  * Team upload
+
+  [ Helmut Grohne ]
+  * Fix FTCBFS: (Closes: #929089)
+    + Annotate Build-Depends: python with :native.
+    + Pass cross tools to waf.
+
+  [ Ondřej Nový ]
+  * d/copyright: Use https protocol in Format field
+  * d/control: Set Vcs-* to salsa.debian.org
+
+  [ Felipe Sateler ]
+  * Change maintainer address to debian-multimedia@lists.debian.org
+
+  [ Ondřej Nový ]
+  * Use debhelper-compat instead of debian/compat
+
+  [ Sebastian Ramacher ]
+  * New upstream release
+  * debian/rules: Remove get-orig-source
+  * debian/copyright: Fix waf paragraph
+  * debian/control:
+    - Bump libserd-dev B-D
+    - Remove obsolete Pre-Depends
+    - Bump debhelper compat to 12
+    - Bump Standards-Version
+    - Set RRR: no
+    - Fix section of library package
+  * debian/: Use python3 to run waf (Closes: #943225)
+
+ -- Sebastian Ramacher <sramacher@debian.org>  Sun, 08 Dec 2019 21:24:44 +0100
+
+sord (0.16.0~dfsg0-1) unstable; urgency=medium
+
+  * New upstream version 0.16.0~dfsg0
+  * Patches refreshed.
+  * Tighten B-D for libserd-dev.
+  * Doxy patch dropped - not needed.
+  * Update copyright file.
+  * Update symbols file.
+  * Drop dbg package in favour of dbgsym.
+
+ -- Jaromír Mikeš <mira.mikes@seznam.cz>  Thu, 22 Sep 2016 20:33:50 +0200
+
+sord (0.14.0~dfsg0-2) unstable; urgency=medium
+
+  * Add libpcre++-dev as b-dep to build sord_validate binary (Closes: #829508).
+  * Fix VCS fields.
+  * Bump Standards.
+  * Fix some hardening.
+
+ -- Jaromír Mikeš <mira.mikes@seznam.cz>  Mon, 04 Jul 2016 10:20:55 +0200
+
+sord (0.14.0~dfsg0-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.14.0~dfsg0
+  * Refresh patch.
+  * Bump Standards.
+  * Make watch file more flexible.
+  * Patched waf to find generated docs.
+  * Enable parallel build.
+  * Update symbols file.
+
+ -- Jaromír Mikeš <mira.mikes@seznam.cz>  Wed, 14 Oct 2015 16:18:53 +0200
+
+sord (0.12.2~dfsg0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Added myself as uploader
+  * Tuned get-orig-source.
+  * Remove --debug from configure to cppflags be passed.
+  * Bump Standards.
+
+ -- Jaromír Mikeš <mira.mikes@seznam.cz>  Thu, 14 Aug 2014 09:03:47 +0200
+
+sord (0.12.0~dfsg0-3) unstable; urgency=low
+
+  * Upload to unstable.
+  * Bump Standards.
+
+ -- Alessio Treglia <alessio@debian.org>  Tue, 07 May 2013 10:52:57 +0100
+
+sord (0.12.0~dfsg0-2) experimental; urgency=low
+
+  * Tighten libsord-dev's dependency on libserd-dev >= 0.18.0~.
+
+ -- Alessio Treglia <alessio@debian.org>  Tue, 12 Mar 2013 16:51:17 +0000
+
+sord (0.12.0~dfsg0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Fix libsord-doc.install.
+  * Refresh symbols file.
+
+ -- Alessio Treglia <alessio@debian.org>  Mon, 11 Mar 2013 02:33:32 +0000
+
+sord (0.10.4~dfsg0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Install sord_validate and its manpage.
+  * Refresh patches.
+
+ -- Alessio Treglia <alessio@debian.org>  Mon, 05 Nov 2012 10:20:51 +0000
+
+sord (0.10.0~dfsg0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Refresh patches.
+  * Bump build-dep on libserd >= 0.18.0~dfsg0.
+  * Implement a mechanism to repack the upstream tarball.
+  * Install NEWS as upstream changelog.
+  * Refresh symbols.
+
+ -- Alessio Treglia <alessio@debian.org>  Sun, 02 Sep 2012 17:49:46 +0200
+
+sord (0.8.0~dfsg0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Refresh patches.
+  * Refresh symbols.
+  * Put in sord-dbg only symbols from libsord-0-0.
+  * Bump debhelper requirement to 9.
+  * Bump serd requirement to 0.14.0.
+  * debian/watch: Mangles dfsg suffix.
+  * Update Vcs-* fields.
+  * Set tarball compression to xz
+  * Update debian/copyright's format.
+  * Bump Standards.
+
+ -- Alessio Treglia <alessio@debian.org>  Fri, 20 Apr 2012 09:40:28 +0200
+
+sord (0.5.0+dfsg0-2) unstable; urgency=low
+
+  * Build with MultiArch.
+
+ -- Alessio Treglia <alessio@debian.org>  Tue, 24 Jan 2012 11:02:44 +0100
+
+sord (0.5.0+dfsg0-1) unstable; urgency=low
+
+  [ Adrian Knoth ]
+  * Drop all references to Redland.
+
+  [ Alessio Treglia ]
+  * Repack upstream tarball to get rid of waf blob (Closes: #654504).
+  * Adjust the clean target to properly clean the sources tree.
+
+ -- Alessio Treglia <alessio@debian.org>  Tue, 10 Jan 2012 01:53:10 +0100
+
+sord (0.5.0-1) unstable; urgency=low
+
+  * New upstream release:
+    - Remove glib dependency
+    - Add function sord_contains for checking for a triple pattern
+    - Add function sord_write_iter for writing a queried range
+    - Fix Sord::Namespaces::qualify to no longer chop prefixes
+    - Add ability to build static library
+  * Drop glib dependency.
+  * Requires serd >= 0.5.0
+  * Update symbols file.
+
+ -- Alessio Treglia <alessio@debian.org>  Mon, 03 Oct 2011 13:16:09 +0200
+
+sord (0.4.2-1) unstable; urgency=low
+
+  * Initial release. (Closes: #619426)
+
+ -- Alessio Treglia <alessio@debian.org>  Thu, 26 May 2011 11:47:25 +0200
