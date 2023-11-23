@@ -1,9 +1,54 @@
+sord (0.16.14+git221008-1) unstable; urgency=medium
+
+  * New upstream version 0.16.14+git221008
+    + Fix build against PCRE2
+  * Add libpcre2-dev to B-Ds, this enables sord_validate again
+  * d/control: Update homepage URL (Closes: #1021291)
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Sun, 09 Oct 2022 22:42:41 +0200
+
+sord (0.16.14-2) unstable; urgency=medium
+
+  * Drop optional Build-Depends libpcre++-dev (Closes: #1020931)
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Wed, 28 Sep 2022 22:43:00 +0200
+
+sord (0.16.14-1) unstable; urgency=medium
+
+  * New upstream version 0.16.14
+  * Update symbols file
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Mon, 12 Sep 2022 23:12:18 +0200
+
+sord (0.16.12-1) unstable; urgency=medium
+
+  * New upstream version 0.16.12
+  * Build with meson
+  * Drop obsolete ldconfig patch
+  * d/copyright: Drop waf* entry and BSD license
+  * Update doc installation
+  * Refresh lintian-overrides
+  * Update d/clean
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Mon, 25 Jul 2022 16:21:04 +0200
+
+sord (0.16.10-1) unstable; urgency=medium
+
+  * New upstream version 0.16.10
+  * Refresh patchset, drop gcc10 patch applied by upstream
+  * Bump Standards Version to 4.6.1
+  * d/copyright: Bump year and add myself
+  * Update d/libsord-0-0.symbols
+  * d/watch: Use .sig for pgpsigurlmangle
+
+ -- Dennis Braun <d_braun@kabelmail.de>  Mon, 30 May 2022 23:23:47 +0200
+
 sord (0.16.8-2) unstable; urgency=medium
 
   [ Helmut Grohne ]
   * Reduce Build-Depends: (Closes: #981735)
     + Demote doxygen to B-D-I.
-    + Drop graphviz, because HAVE_DOT=NO. 
+    + Drop graphviz, because HAVE_DOT=NO.
 
   [ Dennis Braun ]
   * Mark libsord-doc as M-A: foreign

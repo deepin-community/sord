@@ -1,6 +1,2 @@
-autowaf/autowaf.pyc
-.lock-wscript
-.waf*
 build
 get-orig-source
-

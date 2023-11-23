@@ -1,18 +1,5 @@
-/*
-  Copyright 2011-2015 David Robillard <d@drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+// Copyright 2011-2020 David Robillard <d@drobilla.net>
+// SPDX-License-Identifier: ISC
 
 #ifndef ZIX_HASH_H
 #define ZIX_HASH_H
@@ -43,8 +30,7 @@ typedef uint32_t (*ZixHashFunc)(const void* value);
 /**
    Function to visit a hash element.
 */
-typedef void (*ZixHashVisitFunc)(void* value,
-                                 void* user_data);
+typedef void (*ZixHashVisitFunc)(void* value, void* user_data);
 
 /**
    Create a new hash table.
@@ -59,21 +45,22 @@ typedef void (*ZixHashVisitFunc)(void* value,
    @param equal_func A function to test value equality.
    @param value_size The size of the values to be stored.
 */
-ZIX_API ZixHash*
-zix_hash_new(ZixHashFunc  hash_func,
-             ZixEqualFunc equal_func,
-             size_t       value_size);
+ZIX_API
+ZixHash*
+zix_hash_new(ZixHashFunc hash_func, ZixEqualFunc equal_func, size_t value_size);
 
 /**
    Free `hash`.
 */
-ZIX_API void
+ZIX_API
+void
 zix_hash_free(ZixHash* hash);
 
 /**
    Return the number of elements in `hash`.
 */
-ZIX_PURE_API size_t
+ZIX_PURE_API
+size_t
 zix_hash_size(const ZixHash* hash);
 
 /**
@@ -90,10 +77,9 @@ zix_hash_size(const ZixHash* hash);
    @param inserted The copy of `value` in the hash table.
    @return ZIX_STATUS_SUCCESS, ZIX_STATUS_EXISTS, or ZIX_STATUS_NO_MEM.
 */
-ZIX_API ZixStatus
-zix_hash_insert(ZixHash*    hash,
-                const void* value,
-                void**      inserted);
+ZIX_API
+ZixStatus
+zix_hash_insert(ZixHash* hash, const void* value, void** inserted);
 
 /**
    Remove an item from `hash`.
@@ -102,9 +88,9 @@ zix_hash_insert(ZixHash*    hash,
    @param value The value to remove.
    @return ZIX_STATUS_SUCCES or ZIX_STATUS_NOT_FOUND.
 */
-ZIX_API ZixStatus
-zix_hash_remove(ZixHash*    hash,
-                const void* value);
+ZIX_API
+ZixStatus
+zix_hash_remove(ZixHash* hash, const void* value);
 
 /**
    Search for an item in `hash`.
@@ -112,9 +98,9 @@ zix_hash_remove(ZixHash*    hash,
    @param hash The hash table.
    @param value The value to search for.
 */
-ZIX_API void*
-zix_hash_find(const ZixHash* hash,
-              const void*    value);
+ZIX_API
+void*
+zix_hash_find(const ZixHash* hash, const void* value);
 
 /**
    Call `f` on each value in `hash`.
@@ -123,10 +109,9 @@ zix_hash_find(const ZixHash* hash,
    @param f The function to call on each value.
    @param user_data The user_data parameter passed to `f`.
 */
-ZIX_API void
-zix_hash_foreach(ZixHash*         hash,
-                 ZixHashVisitFunc f,
-                 void*            user_data);
+ZIX_API
+void
+zix_hash_foreach(ZixHash* hash, ZixHashVisitFunc f, void* user_data);
 
 /**
    @}
@@ -134,7 +119,7 @@ zix_hash_foreach(ZixHash*         hash,
 */
 
 #ifdef __cplusplus
-}  /* extern "C" */
+} /* extern "C" */
 #endif
 
-#endif  /* ZIX_HASH_H */
+#endif /* ZIX_HASH_H */

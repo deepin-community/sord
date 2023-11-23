@@ -8,14 +8,15 @@ Uploaders:
  Dennis Braun <d_braun@kabelmail.de>
 Build-Depends:
  debhelper-compat (= 13),
+ libpcre2-dev,
  libserd-dev (>= 0.30),
- libpcre++-dev,
+ meson,
  pkg-config,
  python3:native,
 Build-Depends-Indep:
  doxygen,
-Standards-Version: 4.5.1
-Homepage: https://drobilla.net/software/sord/
+Standards-Version: 4.6.1
+Homepage: https://drobilla.net/software/sord.html
 Vcs-Git: https://salsa.debian.org/multimedia-team/sord.git
 Vcs-Browser: https://salsa.debian.org/multimedia-team/sord
 Rules-Requires-Root: no

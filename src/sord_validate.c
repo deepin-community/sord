@@ -1,18 +1,5 @@
-/*
-  Copyright 2012-2021 David Robillard <d@drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+// Copyright 2012-2021 David Robillard <d@drobilla.net>
+// SPDX-License-Identifier: ISC
 
 #define _BSD_SOURCE 1     // for realpath
 #define _DEFAULT_SOURCE 1 // for realpath
@@ -21,17 +8,18 @@
 #include "sord/sord.h"
 #include "sord_config.h"
 
-#if USE_PCRE
-#  include <pcre.h>
+#if USE_PCRE2
+#  define PCRE2_CODE_UNIT_WIDTH 8
+#  include <pcre2.h>
 #endif
 
 #ifdef _WIN32
 #  include <windows.h>
 #endif
 
+#include <inttypes.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -189,30 +177,43 @@ is_descendant_of(SordModel*      model,
 }
 
 static bool
-regexp_match(const uint8_t* pat, const char* str)
+regexp_match(const uint8_t* const pattern, const char* const str)
 {
-#if USE_PCRE
-  // Append a $ to the pattern so we only match if the entire string matches
-  const size_t len  = strlen((const char*)pat);
-  char* const  regx = (char*)malloc(len + 2);
-  memcpy(regx, pat, len);
-  regx[len]     = '$';
-  regx[len + 1] = '\0';
+#if USE_PCRE2
+  static const uint32_t options = PCRE2_ANCHORED | PCRE2_ENDANCHORED;
 
-  const char* err;
-  int         erroffset;
-  pcre*       re = pcre_compile(regx, PCRE_ANCHORED, &err, &erroffset, NULL);
-  free(regx);
+  int    err       = 0;
+  size_t erroffset = 0U;
+
+  pcre2_code* const re = pcre2_compile(
+    pattern, PCRE2_ZERO_TERMINATED, options, &err, &erroffset, NULL);
+
   if (!re) {
-    fprintf(
-      stderr, "Error in pattern `%s' at offset %d (%s)\n", pat, erroffset, err);
+    fprintf(stderr,
+            "Error in pattern `%s' at offset %lu (%d)\n",
+            pattern,
+            erroffset,
+            err);
     return false;
   }
 
-  const bool ret = pcre_exec(re, NULL, str, strlen(str), 0, 0, NULL, 0) >= 0;
-  pcre_free(re);
-  return ret;
-#endif // USE_PCRE
+  pcre2_match_data* const match_data =
+    pcre2_match_data_create_from_pattern(re, NULL);
+
+  const int rc = pcre2_match(re,
+                             (const uint8_t*)str,
+                             PCRE2_ZERO_TERMINATED,
+                             0,
+                             options,
+                             match_data,
+                             NULL);
+
+  pcre2_match_data_free(match_data);
+
+  pcre2_code_free(re);
+  return rc > 0;
+#endif // USE_PCRE2
+
   return true;
 }
 
@@ -496,18 +497,19 @@ check_properties(SordModel* model, URIs* uris)
 
     if (is_FunctionalProperty) {
       SordIter*      o = sord_search(model, subj, pred, NULL, NULL);
-      const unsigned n = count_non_blanks(o, SORD_OBJECT);
+      const uint64_t n = count_non_blanks(o, SORD_OBJECT);
       if (n > 1) {
-        st = errorf(quad, "Functional property with %u objects", n);
+        st = errorf(quad, "Functional property with %" PRIu64 " objects", n);
       }
       sord_iter_free(o);
     }
 
     if (is_InverseFunctionalProperty) {
       SordIter*      s = sord_search(model, NULL, pred, obj, NULL);
-      const unsigned n = count_non_blanks(s, SORD_SUBJECT);
+      const uint64_t n = count_non_blanks(s, SORD_SUBJECT);
       if (n > 1) {
-        st = errorf(quad, "Inverse functional property with %u subjects", n);
+        st = errorf(
+          quad, "Inverse functional property with %" PRIu64 " subjects", n);
       }
       sord_iter_free(s);
     }
@@ -564,7 +566,8 @@ check_instance(SordModel*      model,
     return 0;
   }
 
-  const unsigned values = sord_count(model, instance, prop, NULL, NULL);
+  const unsigned values =
+    (unsigned)sord_count(model, instance, prop, NULL, NULL);
 
   // Check exact cardinality
   const SordNode* card =
@@ -786,8 +789,8 @@ main(int argc, char** argv)
   URI(xsd, pattern);
   URI(xsd, string);
 
-#if !USE_PCRE
-  fprintf(stderr, "warning: Built without PCRE, datatypes not checked.\n");
+#if !USE_PCRE2
+  fprintf(stderr, "warning: Built without PCRE2, datatypes not checked.\n");
 #endif
 
   const int prop_st = check_properties(model, &uris);
