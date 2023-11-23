@@ -1,18 +1,5 @@
-/*
-  Copyright 2021 David Robillard <d@drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+// Copyright 2021 David Robillard <d@drobilla.net>
+// SPDX-License-Identifier: ISC
 
 /*
   Configuration header that defines reasonable defaults at compile time.
@@ -29,15 +16,15 @@
 #define SORD_CONFIG_H
 
 // Define version unconditionally so a warning will catch a mismatch
-#define SORD_VERSION "0.16.8"
+#define SORD_VERSION "0.16.15"
 
 #if !defined(SORD_NO_DEFAULT_CONFIG)
 
-// The validator uses PCRE for literal pattern matching
-#  ifndef HAVE_PCRE
+// The validator uses PCRE2 for literal pattern matching
+#  ifndef HAVE_PCRE2
 #    ifdef __has_include
-#      if __has_include(<pcre.h>)
-#        define HAVE_PCRE 1
+#      if __has_include(<pcre2.h>)
+#        define HAVE_PCRE2 1
 #      endif
 #    endif
 #  endif
@@ -52,10 +39,10 @@
   if the build system defines them all.
 */
 
-#ifdef HAVE_PCRE
-#  define USE_PCRE 1
+#ifdef HAVE_PCRE2
+#  define USE_PCRE2 1
 #else
-#  define USE_PCRE 0
+#  define USE_PCRE2 0
 #endif
 
 #endif // SORD_CONFIG_H
