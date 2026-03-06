@@ -4,17 +4,25 @@
 #define _BSD_SOURCE 1     // for realpath
 #define _DEFAULT_SOURCE 1 // for realpath
 
-#include "serd/serd.h"
-#include "sord/sord.h"
 #include "sord_config.h"
 
+#include <serd/serd.h>
+#include <sord/sord.h>
+#include <zix/allocator.h>
+#include <zix/filesystem.h>
+
 #if USE_PCRE2
+#  if defined(__clang__)
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#  endif
+
 #  define PCRE2_CODE_UNIT_WIDTH 8
 #  include <pcre2.h>
-#endif
 
-#ifdef _WIN32
-#  include <windows.h>
+#  if defined(__clang__)
+#    pragma clang diagnostic pop
+#  endif
 #endif
 
 #include <inttypes.h>
@@ -97,33 +105,20 @@ print_usage(const char* name, bool error)
 {
   FILE* const os = error ? stderr : stdout;
   fprintf(os, "Usage: %s [OPTION]... INPUT...\n", name);
-  fprintf(os, "Validate RDF data\n\n");
+  fprintf(os, "Validate RDF data.\n\n");
   fprintf(os, "  -h  Display this help and exit\n");
-  fprintf(os, "  -l  Print errors on a single line.\n");
+  fprintf(os, "  -l  Print errors on a single line\n");
   fprintf(os, "  -v  Display version information and exit\n");
   fprintf(os,
+          "\n"
           "Validate RDF data.  This is a simple validator which checks\n"
-          "that all used properties are actually defined.  It does not do\n"
-          "any fancy file retrieval, the files passed on the command line\n"
-          "are the only data that is read.  In other words, you must pass\n"
-          "the definition of all vocabularies used on the command line.\n");
+          "that all used properties are actually defined.  It doesn't do\n"
+          "any automatic file retrieval, so all vocabularies must be\n"
+          "passed as command-line arguments.\n");
   return error ? 1 : 0;
 }
 
-static uint8_t*
-absolute_path(const uint8_t* path)
-{
-#ifdef _WIN32
-  char* out = (char*)malloc(MAX_PATH);
-  GetFullPathName((const char*)path, MAX_PATH, out, NULL);
-  return (uint8_t*)out;
-#else
-  return (uint8_t*)realpath((const char*)path, NULL);
-#endif
-}
-
-SORD_LOG_FUNC(2, 3)
-static int
+SORD_LOG_FUNC(2, 3) static int
 errorf(const SordQuad quad, const char* fmt, ...)
 {
   va_list args;
@@ -190,7 +185,7 @@ regexp_match(const uint8_t* const pattern, const char* const str)
 
   if (!re) {
     fprintf(stderr,
-            "Error in pattern `%s' at offset %lu (%d)\n",
+            "Error in pattern `%s' at offset %zu (%d)\n",
             pattern,
             erroffset,
             err);
@@ -212,9 +207,9 @@ regexp_match(const uint8_t* const pattern, const char* const str)
 
   pcre2_code_free(re);
   return rc > 0;
-#endif // USE_PCRE2
-
+#else
   return true;
+#endif // USE_PCRE2
 }
 
 static int
@@ -338,7 +333,7 @@ literal_is_valid(SordModel*      model,
 
   // Find restrictions list
   SordIter* rs = sord_search(model, type, uris->owl_withRestrictions, 0, 0);
-  if (sord_iter_end(rs)) {
+  if (!rs) {
     return true; // No restrictions
   }
 
@@ -422,11 +417,9 @@ check_type(SordModel*      model,
       sord_iter_free(t);
       return false;
     }
-  } else {
-    return true; // Blanks often lack explicit types, ignore
   }
 
-  return false;
+  return true; // Blanks often lack explicit types, ignore
 }
 
 static uint64_t
@@ -573,7 +566,7 @@ check_instance(SordModel*      model,
   const SordNode* card =
     sord_get(model, restriction, uris->owl_cardinality, NULL, NULL);
   if (card) {
-    const unsigned c = atoi((const char*)sord_node_get_string(card));
+    const unsigned c = (unsigned)atoi((const char*)sord_node_get_string(card));
     if (values != c) {
       st = errorf(quad,
                   "Property %s on %s has %u != %u values",
@@ -588,7 +581,8 @@ check_instance(SordModel*      model,
   const SordNode* minCard =
     sord_get(model, restriction, uris->owl_minCardinality, NULL, NULL);
   if (minCard) {
-    const unsigned m = atoi((const char*)sord_node_get_string(minCard));
+    const unsigned m =
+      (unsigned)atoi((const char*)sord_node_get_string(minCard));
     if (values < m) {
       st = errorf(quad,
                   "Property %s on %s has %u < %u values",
@@ -603,7 +597,8 @@ check_instance(SordModel*      model,
   const SordNode* maxCard =
     sord_get(model, restriction, uris->owl_maxCardinality, NULL, NULL);
   if (maxCard) {
-    const unsigned m = atoi((const char*)sord_node_get_string(maxCard));
+    const unsigned m =
+      (unsigned)atoi((const char*)sord_node_get_string(maxCard));
     if (values < m) {
       st = errorf(quad,
                   "Property %s on %s has %u > %u values",
@@ -705,7 +700,9 @@ main(int argc, char** argv)
 
   int a = 1;
   for (; a < argc && argv[a][0] == '-'; ++a) {
-    if (argv[a][1] == 'l') {
+    if (argv[a][1] == 'h') {
+      return print_usage(argv[0], false);
+    } else if (argv[a][1] == 'l') {
       one_line_errors = true;
     } else if (argv[a][1] == 'v') {
       return print_version();
@@ -723,7 +720,7 @@ main(int argc, char** argv)
   for (; a < argc; ++a) {
     const uint8_t* input       = (const uint8_t*)argv[a];
     uint8_t*       rel_in_path = serd_file_uri_parse(input, NULL);
-    uint8_t*       in_path     = absolute_path(rel_in_path);
+    char*          in_path     = zix_canonical_path(NULL, (char*)rel_in_path);
 
     free(rel_in_path);
     if (!in_path) {
@@ -733,16 +730,17 @@ main(int argc, char** argv)
 
     SerdURI  base_uri;
     SerdNode base_uri_node =
-      serd_node_new_file_uri(in_path, NULL, &base_uri, true);
+      serd_node_new_file_uri((const uint8_t*)in_path, NULL, &base_uri, true);
 
     serd_env_set_base_uri(env, &base_uri_node);
-    const SerdStatus st = serd_reader_read_file(reader, in_path);
+    const SerdStatus st =
+      serd_reader_read_file(reader, (const uint8_t*)in_path);
     if (st) {
       fprintf(stderr, "error reading %s: %s\n", in_path, serd_strerror(st));
     }
 
     serd_node_free(&base_uri_node);
-    free(in_path);
+    zix_free(NULL, in_path);
   }
   serd_reader_free(reader);
   serd_env_free(env);

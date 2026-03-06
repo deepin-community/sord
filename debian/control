@@ -5,17 +5,18 @@ Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
 Uploaders:
  Alessio Treglia <alessio@debian.org>,
  Jaromír Mikeš <mira.mikes@seznam.cz>,
- Dennis Braun <d_braun@kabelmail.de>
+ Dennis Braun <snd@debian.org>
 Build-Depends:
  debhelper-compat (= 13),
  libpcre2-dev,
  libserd-dev (>= 0.30),
+ libzix-dev,
  meson,
- pkg-config,
+ pkgconf,
  python3:native,
 Build-Depends-Indep:
  doxygen,
-Standards-Version: 4.6.1
+Standards-Version: 4.7.0
 Homepage: https://drobilla.net/software/sord.html
 Vcs-Git: https://salsa.debian.org/multimedia-team/sord.git
 Vcs-Browser: https://salsa.debian.org/multimedia-team/sord
@@ -42,12 +43,13 @@ Architecture: any
 Multi-Arch: same
 Depends:
  libserd-dev (>= 0.30),
+ libzix-dev,
  libsord-0-0 (= ${binary:Version}),
  ${misc:Depends}
 Suggests:
  libsord-doc
 Recommends:
- pkg-config
+ pkgconf
 Description: library for storing RDF data in memory (development files)
  Sord is a lightweight C library for storing Resource
  Description Framework (RDF) data in memory.

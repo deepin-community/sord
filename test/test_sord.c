@@ -1,8 +1,8 @@
 // Copyright 2011-2016 David Robillard <d@drobilla.net>
 // SPDX-License-Identifier: ISC
 
-#include "serd/serd.h"
-#include "sord/sord.h"
+#include <serd/serd.h>
+#include <sord/sord.h>
 
 #include <inttypes.h>
 #include <stdarg.h>
@@ -41,8 +41,7 @@ uri(SordWorld* world, unsigned num)
   return sord_new_uri(world, (const uint8_t*)str);
 }
 
-SORD_LOG_FUNC(1, 2)
-static int
+SORD_LOG_FUNC(1, 2) static int
 test_fail(const char* fmt, ...)
 {
   va_list args;
@@ -181,6 +180,7 @@ test_read(SordWorld* world, SordModel* sord, SordNode* g, const size_t n_quads)
 
   SordIter* iter = sord_begin(sord);
   if (sord_iter_get_model(iter) != sord) {
+    sord_iter_free(iter);
     return test_fail("Fail: Iterator has incorrect sord pointer\n");
   }
 
@@ -190,6 +190,7 @@ test_read(SordWorld* world, SordModel* sord, SordNode* g, const size_t n_quads)
 
   // Attempt to increment past end
   if (!sord_iter_next(iter)) {
+    sord_iter_free(iter);
     return test_fail("Fail: Successfully incremented past end\n");
   }
 
@@ -316,6 +317,8 @@ test_read(SordWorld* world, SordModel* sord, SordNode* g, const size_t n_quads)
     SordIter* subiter         = sord_find(sord, subpat);
     unsigned  num_sub_results = 0;
     if (sord_iter_get_node(subiter, SORD_SUBJECT) != id[0]) {
+      sord_iter_free(iter);
+      sord_iter_free(subiter);
       return test_fail("Fail: Incorrect initial submatch\n");
     }
     for (; !sord_iter_end(subiter); sord_iter_next(subiter)) {
@@ -330,6 +333,7 @@ test_read(SordWorld* world, SordModel* sord, SordNode* g, const size_t n_quads)
     }
     sord_iter_free(subiter);
     if (num_sub_results != N_OBJECTS_PER) {
+      sord_iter_free(iter);
       return test_fail("Fail: Nested query " TUP_FMT " failed"
                        " (%u results, expected %u)\n",
                        TUP_FMT_ARGS(subpat),
@@ -339,6 +343,7 @@ test_read(SordWorld* world, SordModel* sord, SordNode* g, const size_t n_quads)
 
     uint64_t count = sord_count(sord, id[0], 0, 0, 0);
     if (count != num_sub_results) {
+      sord_iter_free(iter);
       return test_fail("Fail: Query " TUP_FMT " sord_count() %" PRIu64
                        "does not match result count %u\n",
                        TUP_FMT_ARGS(subpat),
@@ -528,10 +533,10 @@ main(void)
   SordNode*     chello   = sord_new_literal(world, NULL, ni_hao, "cmn");
 
   // Test literal length
-  size_t         n_bytes;
-  size_t         n_chars;
-  const uint8_t* str = sord_node_get_string_counted(lit_id2, &n_bytes);
-  if (strcmp((const char*)str, "hello")) {
+  size_t         n_bytes = 0U;
+  size_t         n_chars = 0U;
+  const uint8_t* str     = sord_node_get_string_counted(lit_id2, &n_bytes);
+  if (!!strcmp((const char*)str, "hello")) {
     return test_fail("Literal node corrupt\n");
   } else if (n_bytes != strlen("hello")) {
     return test_fail("ASCII literal byte count incorrect\n");
@@ -540,7 +545,7 @@ main(void)
   str = sord_node_get_string_measured(lit_id2, &n_bytes, &n_chars);
   if (n_bytes != strlen("hello") || n_chars != strlen("hello")) {
     return test_fail("ASCII literal measured length incorrect\n");
-  } else if (strcmp((const char*)str, "hello")) {
+  } else if (!!strcmp((const char*)str, "hello")) {
     return test_fail("ASCII literal string incorrect\n");
   }
 
@@ -549,7 +554,7 @@ main(void)
     return test_fail("Multi-byte literal byte count incorrect\n");
   } else if (n_chars != 2) {
     return test_fail("Multi-byte literal character count incorrect\n");
-  } else if (strcmp((const char*)str, (const char*)ni_hao)) {
+  } else if (!!strcmp((const char*)str, (const char*)ni_hao)) {
     return test_fail("Multi-byte literal string incorrect\n");
   }
 
@@ -582,8 +587,8 @@ main(void)
   // Check relative URI construction
   SordNode* reluri =
     sord_new_relative_uri(world, USTR("a/b"), USTR("http://example.org/"));
-  if (strcmp((const char*)sord_node_get_string(reluri),
-             "http://example.org/a/b")) {
+  if (!!strcmp((const char*)sord_node_get_string(reluri),
+               "http://example.org/a/b")) {
     fprintf(stderr,
             "Fail: Bad relative URI constructed: <%s>\n",
             sord_node_get_string(reluri));
@@ -591,8 +596,8 @@ main(void)
   }
   SordNode* reluri2 = sord_new_relative_uri(
     world, USTR("http://drobilla.net/"), USTR("http://example.org/"));
-  if (strcmp((const char*)sord_node_get_string(reluri2),
-             "http://drobilla.net/")) {
+  if (!!strcmp((const char*)sord_node_get_string(reluri2),
+               "http://drobilla.net/")) {
     fprintf(stderr,
             "Fail: Bad relative URI constructed: <%s>\n",
             sord_node_get_string(reluri));
@@ -614,8 +619,8 @@ main(void)
   static const char* const index_names[6] = {
     "spo", "sop", "ops", "osp", "pso", "pos"};
 
-  for (int i = 0; i < 6; ++i) {
-    sord = sord_new(world, (1 << i), false);
+  for (unsigned i = 0U; i < 6U; ++i) {
+    sord = sord_new(world, (1U << i), false);
     printf("Testing Index `%s'\n", index_names[i]);
     generate(world, sord, n_quads, 0);
     if (test_read(world, sord, 0, n_quads)) {
@@ -627,8 +632,8 @@ main(void)
   static const char* const graph_index_names[6] = {
     "gspo", "gsop", "gops", "gosp", "gpso", "gpos"};
 
-  for (int i = 0; i < 6; ++i) {
-    sord = sord_new(world, (1 << i), true);
+  for (unsigned i = 0U; i < 6U; ++i) {
+    sord = sord_new(world, (1U << i), true);
     printf("Testing Index `%s'\n", graph_index_names[i]);
     SordNode* graph = uri(world, 42);
     generate(world, sord, n_quads, graph);
@@ -676,8 +681,8 @@ main(void)
   generate(world, sord, 1, graph43);
 
   // Remove one graph via iterator
-  SerdStatus st;
-  iter = sord_search(sord, NULL, NULL, NULL, graph43);
+  SerdStatus st = SERD_SUCCESS;
+  iter          = sord_search(sord, NULL, NULL, NULL, graph43);
   while (!sord_iter_end(iter)) {
     if ((st = sord_erase(sord, iter))) {
       fprintf(stderr, "Remove by iterator failed (%s)\n", serd_strerror(st));

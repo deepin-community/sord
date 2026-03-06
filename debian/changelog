@@ -1,3 +1,32 @@
+sord (0.16.18-1) unstable; urgency=medium
+
+  * New upstream version 0.16.18
+  * Change B-D from pkg-config => pkgconf
+  * libsord-dev Recommends: pkg-config => pkgconf
+  * Bump Standards-Version to 4.7.0
+  * Bump my d/copyright years
+  * Change my email address
+
+ -- Dennis Braun <snd@debian.org>  Sun, 09 Feb 2025 15:03:40 +0100
+
+sord (0.16.16-2) unstable; urgency=medium
+
+  * Team upload
+  * debian/rules: Add libzix-dev to libsord-dev's Depends
+
+ -- Sebastian Ramacher <sramacher@debian.org>  Sat, 11 Nov 2023 00:24:53 +0100
+
+sord (0.16.16-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream version 0.16.16
+  * debian/control:
+    - Bump Standards-Version
+    - Add libzix-dev to Build-Depends
+  * debian/rules: Remove left-overs from waf
+
+ -- Sebastian Ramacher <sramacher@debian.org>  Sat, 11 Nov 2023 00:08:05 +0100
+
 sord (0.16.14+git221008-1) unstable; urgency=medium
 
   * New upstream version 0.16.14+git221008

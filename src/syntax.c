@@ -1,8 +1,8 @@
 // Copyright 2011-2015 David Robillard <d@drobilla.net>
 // SPDX-License-Identifier: ISC
 
-#include "serd/serd.h"
-#include "sord/sord.h"
+#include <serd/serd.h>
+#include <sord/sord.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -79,8 +79,7 @@ sord_inserter_write_statement(SordInserter*      inserter,
   return SERD_SUCCESS;
 }
 
-SORD_API
-SerdReader*
+SORD_API SerdReader*
 sord_new_reader(SordModel* model,
                 SerdEnv*   env,
                 SerdSyntax syntax,
@@ -153,9 +152,9 @@ write_statement(SordModel*         sord,
         sord_iter_get(sub_iter, sub_tup);
         st = write_statement(sord, writer, sub_tup, flags);
       }
-      sord_iter_free(sub_iter);
       serd_writer_end_anon(writer, so);
     }
+    sord_iter_free(sub_iter);
   } else {
     st = serd_writer_write_statement(
       writer, flags, NULL, ss, sp, so, sd, &language);

@@ -2,18 +2,8 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
 
-include /usr/share/dpkg/architecture.mk
--include /usr/share/dpkg/buildtools.mk
-PKG_CONFIG ?= pkg-config
-
-ifeq ($(shell dpkg-query -s doxygen 1>/dev/null 2>&1 && echo yes),yes)
-CONFIG += docs
-endif
-
-CONFIG += strict
-
 %:
-	dh $@ --buildsystem=meson
+	dh $@
 
 override_dh_installchangelogs:
 	dh_installchangelogs NEWS
