@@ -5,9 +5,9 @@
 # Project Metadata #
 ####################
 
-if get_option('strict')
-  # Check release metadata
+if get_option('lint')
   if not meson.is_subproject()
+    # Check release metadata
     autoship = find_program('autoship', required: false)
     if autoship.found()
       test('autoship', autoship, args: ['test', sord_src_root], suite: 'data')
@@ -17,9 +17,7 @@ if get_option('strict')
   # Check licensing metadata
   reuse = find_program('reuse', required: false)
   if reuse.found()
-    test('REUSE', reuse,
-         args: ['--root', sord_src_root, 'lint'],
-         suite: 'data')
+    test('REUSE', reuse, args: ['--root', sord_src_root, 'lint'], suite: 'data')
   endif
 endif
 

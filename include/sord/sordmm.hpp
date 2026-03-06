@@ -14,8 +14,8 @@
 #  pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 
-#include "serd/serd.h"
-#include "sord/sord.h"
+#include <serd/serd.h>
+#include <sord/sord.h>
 
 #if defined(__clang__)
 #  pragma clang diagnostic pop
@@ -42,10 +42,10 @@ public:
   Noncopyable()  = default;
   ~Noncopyable() = default;
 
-  Noncopyable(const Noncopyable&) = delete;
+  Noncopyable(const Noncopyable&)                  = delete;
   const Noncopyable& operator=(const Noncopyable&) = delete;
 
-  Noncopyable(Noncopyable&&) = delete;
+  Noncopyable(Noncopyable&&)            = delete;
   Noncopyable& operator=(Noncopyable&&) = delete;
 };
 
@@ -92,7 +92,7 @@ public:
     serd_env_set_prefix(_c_obj, &name_node, &uri_node);
   }
 
-  inline std::string qualify(std::string uri) const
+  inline std::string qualify(const std::string& uri) const
   {
     const SerdNode uri_node = string_to_node(SERD_URI, uri);
     SerdNode       prefix;
@@ -441,7 +441,7 @@ struct Iter : public Wrapper<SordIter> {
     , _world(world)
   {}
 
-  Iter(const Iter&) = delete;
+  Iter(const Iter&)            = delete;
   Iter& operator=(const Iter&) = delete;
 
   inline Iter(Iter&& iter) noexcept

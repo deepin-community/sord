@@ -1,13 +1,12 @@
 // Copyright 2011-2016 David Robillard <d@drobilla.net>
 // SPDX-License-Identifier: ISC
 
-#include "serd/serd.h"
-#include "sord/sord.h"
 #include "sord_config.h"
 
-#ifdef _WIN32
-#  include <windows.h>
-#endif
+#include <serd/serd.h>
+#include <sord/sord.h>
+#include <zix/allocator.h>
+#include <zix/filesystem.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -45,11 +44,11 @@ print_usage(const char* name, bool error)
   fprintf(os, "Usage: %s [OPTION]... INPUT [BASE_URI]\n", name);
   fprintf(os, "Load and re-serialise RDF data.\n");
   fprintf(os, "Use - for INPUT to read from standard input.\n\n");
-  fprintf(os, "  -h           Display this help and exit\n");
-  fprintf(os, "  -i SYNTAX    Input syntax (`turtle' or `ntriples')\n");
-  fprintf(os, "  -o SYNTAX    Output syntax (`turtle' or `ntriples')\n");
-  fprintf(os, "  -s INPUT     Parse INPUT as string (terminates options)\n");
-  fprintf(os, "  -v           Display version information and exit\n");
+  fprintf(os, "  -h         Display this help and exit\n");
+  fprintf(os, "  -i SYNTAX  Input syntax (`turtle' or `ntriples')\n");
+  fprintf(os, "  -o SYNTAX  Output syntax (`turtle' or `ntriples')\n");
+  fprintf(os, "  -s INPUT   Parse INPUT as string (terminates options)\n");
+  fprintf(os, "  -v         Display version information and exit\n");
   return error ? 1 : 0;
 }
 
@@ -139,10 +138,13 @@ main(int argc, char** argv)
   SerdURI  base_uri = SERD_URI_NULL;
   SerdNode base     = SERD_NODE_NULL;
   if (a < argc) { // Base URI given on command line
-    base =
-      serd_node_new_uri_from_string((const uint8_t*)argv[a], NULL, &base_uri);
+    const uint8_t* const base_uri_string = (const uint8_t*)argv[a];
+    base = serd_node_new_uri_from_string(base_uri_string, NULL, &base_uri);
   } else if (from_file && in_fd != stdin) { // Use input file URI
-    base = serd_node_new_file_uri(input, NULL, &base_uri, true);
+    char* const abs_path = zix_canonical_path(NULL, (const char*)input);
+    base =
+      serd_node_new_file_uri((const uint8_t*)abs_path, NULL, &base_uri, true);
+    zix_free(NULL, abs_path);
   }
 
   SordWorld*  world  = sord_world_new();
